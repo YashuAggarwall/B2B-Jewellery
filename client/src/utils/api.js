@@ -2,6 +2,13 @@ import axios from 'axios';
 
 const getBaseURL = () => {
     let url = import.meta.env.VITE_API_URL || '/api';
+
+    // Ensure it ends with /api or /api/
+    if (!url.includes('/api')) {
+        url = url.endsWith('/') ? `${url}api` : `${url}/api`;
+    }
+
+    // Ensure it has a trailing slash for relative path appending
     return url.endsWith('/') ? url : `${url}/`;
 };
 
