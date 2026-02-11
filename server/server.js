@@ -2,12 +2,25 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import connectDB from './config/db.js';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Load env vars
 dotenv.config();
 
 // Connect to database
 connectDB();
+
+// Ensure uploads directory exists
+const uploadPath = process.env.UPLOAD_PATH || path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadPath)) {
+    fs.mkdirSync(uploadPath, { recursive: true });
+    console.log(`Created uploads directory at: ${uploadPath}`);
+}
 
 // Route imports
 import authRoutes from './routes/auth.js';
@@ -25,12 +38,13 @@ const app = express();
 const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:3000',
-    process.env.CLIENT_URL
+    process.env.CLIENT_URL,
+    'https://b2-b-jewellery-azpntdoo9-vashuaggarwalls-projects.vercel.app' // Adding the observed Vercel URL
 ].filter(Boolean);
 
 app.use(cors({
-  origin: true,
-  credentials: true
+    origin: true,
+    credentials: true
 }));
 
 app.use(express.json());
