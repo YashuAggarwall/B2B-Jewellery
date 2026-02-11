@@ -7,9 +7,6 @@ const getBaseURL = () => {
 
 const api = axios.create({
     baseURL: getBaseURL(),
-    headers: {
-        'Content-Type': 'application/json',
-    },
 });
 
 // Add token to requests
@@ -86,8 +83,8 @@ export const quotationAPI = {
     reject: (id, data) => api.put(`quotations/${id}/reject`, data),
     downloadPdf: (id) => {
         const token = localStorage.getItem('token');
-        const apiBase = import.meta.env.VITE_API_URL || '/api';
-        window.open(`${apiBase}/quotations/${id}/download?token=${token}`, '_blank');
+        const apiBase = getBaseURL();
+        window.open(`${apiBase}quotations/${id}/download?token=${token}`, '_blank');
     },
 };
 
