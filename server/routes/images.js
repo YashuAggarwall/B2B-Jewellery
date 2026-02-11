@@ -1,6 +1,7 @@
 import express from 'express';
 import multer from 'multer';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import { protect } from '../middleware/auth.js';
 import imageProcessingService from '../services/imageProcessing.js';
 import { auditLogger } from '../middleware/auditLogger.js';
@@ -10,7 +11,8 @@ const router = express.Router();
 // Configure multer for file upload
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, process.env.UPLOAD_PATH || './uploads');
+        const uploadDir = process.env.UPLOAD_PATH || path.join(path.dirname(fileURLToPath(import.meta.url)), '../uploads');
+        cb(null, uploadDir);
     },
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);

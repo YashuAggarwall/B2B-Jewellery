@@ -42,6 +42,7 @@ const allowedOrigins = [
     'https://b2-b-jewellery-azpntdoo9-vashuaggarwalls-projects.vercel.app' // Adding the observed Vercel URL
 ].filter(Boolean);
 
+// CORS - Apply early to handle all requests
 app.use(cors({
     origin: true,
     credentials: true

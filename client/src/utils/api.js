@@ -41,9 +41,7 @@ export const authAPI = {
 
 // Image API
 export const imageAPI = {
-    upload: (formData) => api.post('/images/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-    }),
+    upload: (formData) => api.post('/images/upload', formData),
     getSession: (id) => api.get(`/images/session/${id}`),
     deleteSession: (id) => api.delete(`/images/session/${id}`),
 };
