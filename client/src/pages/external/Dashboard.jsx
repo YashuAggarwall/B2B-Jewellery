@@ -123,7 +123,7 @@ export default function ExternalDashboard() {
                             </div>
 
                             {!selectedFile ? (
-                                <div className="group relative border-2 border-dashed border-[#D4AF37]/30 rounded-3xl p-16 text-center hover:border-[#D4AF37] hover:bg-[#F7E7CE]/20 transition-all duration-300 cursor-pointer">
+                                <label htmlFor="image-upload" className="group relative block border-2 border-dashed border-[#D4AF37]/30 rounded-3xl p-16 text-center hover:border-[#D4AF37] hover:bg-[#F7E7CE]/20 transition-all duration-300 cursor-pointer">
                                     <input
                                         type="file"
                                         accept="image/*"
@@ -132,7 +132,7 @@ export default function ExternalDashboard() {
                                         id="image-upload"
                                         disabled={uploading}
                                     />
-                                    <label htmlFor="image-upload" className="cursor-pointer flex flex-col items-center">
+                                    <div className="flex flex-col items-center">
                                         {uploading ? (
                                             <div className="flex flex-col items-center">
                                                 <div className="animate-spin rounded-full h-20 w-20 border-4 border-[#F7E7CE] border-t-[#D4AF37] mb-6"></div>
@@ -151,13 +151,13 @@ export default function ExternalDashboard() {
                                                 <p className="text-gray-600 max-w-md mx-auto mb-8" style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.1rem' }}>
                                                     Our AI will analyze your jewelry and curate the finest matching pieces from our exclusive collection
                                                 </p>
-                                                <button className="px-8 py-3.5 bg-gradient-to-r from-[#D4AF37] to-[#B8941F] text-white font-semibold rounded-2xl hover:shadow-xl hover:shadow-[#D4AF37]/20 transition-all duration-300 hover:-translate-y-0.5">
+                                                <div className="px-8 py-3.5 bg-gradient-to-r from-[#D4AF37] to-[#B8941F] text-white font-semibold rounded-2xl hover:shadow-xl hover:shadow-[#D4AF37]/20 transition-all duration-300 hover:-translate-y-0.5 inline-block">
                                                     Select Image
-                                                </button>
+                                                </div>
                                             </>
                                         )}
-                                    </label>
-                                </div>
+                                    </div>
+                                </label>
                             ) : (
                                 <div className="relative rounded-3xl overflow-hidden border-2 border-[#D4AF37]/20 group">
                                     {uploading && (

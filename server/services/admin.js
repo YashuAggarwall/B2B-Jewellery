@@ -61,15 +61,11 @@ class AdminService {
      * Delete margin configuration
      */
     async deleteMarginConfig(configId) {
-        const config = await MarginConfig.findById(configId);
+        const config = await MarginConfig.findByIdAndDelete(configId);
 
         if (!config) {
             throw new Error('Margin configuration not found');
         }
-
-        // Soft delete - just deactivate
-        config.isActive = false;
-        await config.save();
 
         return config;
     }

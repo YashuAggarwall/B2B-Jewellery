@@ -39,7 +39,10 @@ export const AuthProvider = ({ children }) => {
             toast.success('Login successful!');
             return user;
         } catch (error) {
-            toast.error(error.message || 'Login failed');
+            const message = error.message === 'Invalid credentials'
+                ? 'Wrong credentials'
+                : (error.message || 'Login failed');
+            toast.error(message);
             throw error;
         }
     };

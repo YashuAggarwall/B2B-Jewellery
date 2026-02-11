@@ -6,11 +6,10 @@ import Sidebar from '../../components/Sidebar';
 
 export default function QuotationList() {
     const navigate = useNavigate();
-    const [statusFilter, setStatusFilter] = useState('');
 
     const { data: response, isLoading } = useQuery({
-        queryKey: ['quotations', { status: statusFilter }],
-        queryFn: () => quotationAPI.getAll({ status: statusFilter }),
+        queryKey: ['quotations'],
+        queryFn: quotationAPI.getAll,
     });
 
     const quotations = response?.data || [];
@@ -43,39 +42,13 @@ export default function QuotationList() {
 
             <main className="flex-1 ml-64 p-8">
                 {/* Elegant Header */}
-                <div className="mb-12 flex justify-between items-end">
-                    <div>
-                        <h1 className="text-5xl font-bold text-[#1A1A1A] mb-3 tracking-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
-                            My Quotations
-                        </h1>
-                        <p className="text-lg text-gray-500 max-w-2xl" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
-                            Review and manage your custom jewelry procurement proposals and valuation matrices.
-                        </p>
-                    </div>
-
-                    <div className="flex gap-4 p-1.5 bg-white/70 backdrop-blur-md border border-[#D4AF37]/10 rounded-2xl shadow-xl shadow-black/5">
-                        <button
-                            onClick={() => setStatusFilter('')}
-                            className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${statusFilter === ''
-                                ? 'bg-gradient-to-r from-[#D4AF37] to-[#B8941F] text-white shadow-lg shadow-[#D4AF37]/20'
-                                : 'text-gray-400 hover:text-[#1A1A1A] hover:bg-gray-50'
-                                }`}
-                        >
-                            All
-                        </button>
-                        {['Sent', 'Approved', 'Rejected'].map((status) => (
-                            <button
-                                key={status}
-                                onClick={() => setStatusFilter(status)}
-                                className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${statusFilter === status
-                                    ? 'bg-gradient-to-r from-[#D4AF37] to-[#B8941F] text-white shadow-lg shadow-[#D4AF37]/20'
-                                    : 'text-gray-400 hover:text-[#1A1A1A] hover:bg-gray-50'
-                                    }`}
-                            >
-                                {status}
-                            </button>
-                        ))}
-                    </div>
+                <div className="mb-12">
+                    <h1 className="text-5xl font-bold text-[#1A1A1A] mb-3 tracking-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
+                        My Quotations
+                    </h1>
+                    <p className="text-lg text-gray-500 max-w-2xl" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+                        Review and manage your custom jewelry procurement proposals and valuation matrices.
+                    </p>
                 </div>
 
                 {/* Proposals Grid */}
