@@ -35,18 +35,18 @@ import messageRoutes from './routes/message.js';
 const app = express();
 
 // Middleware
-const allowedOrigins = [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    process.env.CLIENT_URL,
-    'https://b2-b-jewellery-azpntdoo9-vashuaggarwalls-projects.vercel.app' // Adding the observed Vercel URL
-].filter(Boolean);
+// Dynamic CORS origin to handle Vercel previews and multiple domains
+const corsOptions = {
+    origin: (origin, callback) => {
+        // Allow all origins to prevent CORS "ghost" errors during server failures
+        callback(null, true);
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+};
 
-// CORS - Apply early to handle all requests
-app.use(cors({
-    origin: true,
-    credentials: true
-}));
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

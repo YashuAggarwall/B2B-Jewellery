@@ -20,7 +20,14 @@ class ImageProcessingService {
     /**
      * Initialize the AI model
      */
-    async initModel() {
+    async asyncInitModel() {
+        // If AI is explicitly disabled, don't even try to load it (saves ~300MB RAM)
+        if (process.env.DISABLE_AI === 'true') {
+            console.log('ℹ️ AI Model is DISABLED via environment variable.');
+            this.classifier = null;
+            return;
+        }
+
         if (!this.classifier) {
             console.log('🔄 Loading AI Model (CLIP)...');
             try {
@@ -32,11 +39,13 @@ class ImageProcessingService {
 
                 // Load CLIP model for zero-shot image classification
                 // 'Xenova/clip-vit-base-patch32' is a good balance of speed/accuracy
-                this.classifier = await pipeline('zero-shot-image-classification', 'Xenova/clip-vit-base-patch32');
+                this.classifier = await pipeline('zero-shot-image-classification', 'Xenova/clip-vit-base-patch32', {
+                    quantized: true, // Use quantized model to save memory
+                });
                 console.log('✅ AI Model Loaded Successfully');
             } catch (error) {
-                console.error('❌ Failed to load AI model:', error);
-                // Fallback to null, will use mock logic if model fails
+                console.error('❌ Failed to load AI model (likely Memory/OOM):', error);
+                // Fallback to null, will use heuristic logic
                 this.classifier = null;
             }
         }
@@ -80,16 +89,18 @@ class ImageProcessingService {
      * Extract attributes using AI Model
      */
     async extractAttributes(file) {
-        console.log('🧠 Analyzing image with AI...');
+        console.log('🧠 Analyzing image...');
 
-        // Ensure model is loaded
-        await this.initModel();
+        // Ensure model is loaded (only if not disabled)
+        await this.asyncInitModel();
 
         let category = 'Ring'; // Default
         let metalColor = 'Gold'; // Default
+        let isAiEstimated = false;
 
         if (this.classifier) {
             try {
+                console.log('🤖 Running AI classification...');
                 // 1. Detect Category
                 const categories = ['Ring', 'Necklace', 'Earring', 'Bracelet', 'Pendant', 'Bangle'];
                 const categoryResult = await this.classifier(file.path, categories);
@@ -99,40 +110,33 @@ class ImageProcessingService {
                 // Get top result
                 if (categoryResult && categoryResult.length > 0) {
                     category = categoryResult[0].label;
+                    isAiEstimated = true;
                 }
 
-                // 2. Detect Metal Color (simple secondary classification)
-                // We'll re-run classification for materials
-                // Note: For efficiency in production, we'd run one pass with all labels, 
-                // but zero-shot splits them nicely conceptually.
-                /* 
-                   Checking material is harder with just zero-shot on the whole image 
-                   without segmentation, but we can try basic colors.
-                */
-                // For now, we'll stick to category detection to keep it fast, 
-                // and infer others or randomise for demo if needed.
-
             } catch (error) {
-                console.error('⚠️ AI inference failed, falling back to heuristic:', error);
+                console.error('⚠️ AI inference failed (Memory Limit?), falling back to heuristic:', error);
                 category = this.detectCategoryHeuristic(file.originalname);
             }
         } else {
-            // Fallback if model failed to load
+            // Fallback if model failed to load or is disabled
+            console.log('ℹ️ Using heuristic fallback for categorization.');
             category = this.detectCategoryHeuristic(file.originalname);
         }
 
         const attributes = {
             category: category,
-            shape: this.detectShapeRandom(), // Real shape detection needs specialized model
+            shape: this.detectShapeRandom(),
             metalVisibility: 'High',
             stonePresence: true,
             stoneDensity: 'Medium',
             finish: 'Polished',
             dominantColor: metalColor,
             estimatedWeight: 'Medium',
+            isAiEstimated: isAiEstimated,
+            processingMethod: isAiEstimated ? 'AI (CLIP)' : 'Heuristic (Fallback)'
         };
 
-        console.log('🔍 Extracted Attributes:', JSON.stringify(attributes, null, 2));
+        console.log('🔍 Final Attributes:', JSON.stringify(attributes, null, 2));
         return attributes;
     }
 
